@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>用发布订阅模式实现登录</title>
+</head>
+<body>
+    
+</body>
+<script>
+    /*
+    *首先我们分析下传统的登录模块实现，传统登录是登录之后调用各种方法，比如设置头部，设置导航，设置消息，刷新购物车。这样我们添加一个新的模块就
+    *不得不要求写登录模块的人重新添加新的方法。如果这个人不在或者已经离职啥的，这块不是很好处理。
+    *我们这块可以用发布订阅模式来实现，我们登录之后只需要发布我登录了，并且把登录信息传过去就好了
+    */ 
+
+    $.ajax({
+        type: "post",
+        url: "url",
+        data: "data",
+        dataType: "dataType",
+        success: function (response) {
+            login.trigger('loginSucc',data);
+        }
+    });
+
+    var header = (function() {
+        login.listen('loginSucc',function(data) {
+            header.setAvatar(data.avatar);
+        });
+        return {
+            setAvatar: function(data) {
+                console.log('设置header模块的头像');
+            }
+        }
+    })();
+
+    var nav = (function(){
+        login.listen('loginSucc',function(data) {
+            nav.setAvatar(data.avatar);
+        });
+        return {
+            setAvatar: function(avatar) {
+                console.log('设置nav的头像');
+            }
+        }
+    })();
+
+</script>
+</html>
