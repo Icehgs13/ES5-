@@ -10,6 +10,131 @@
     
 </body>
 <script>
-    // 
+    // 发布订阅模式：它定义对象间的一种一对多的依赖关系，当一个对象的状态发生改变时候，所有依赖他的对象都将得到通知
+    // 这种模式广泛应用在异步编程中，这是一种替代回调函数的一个解决方案。
+    // 如何实现这种关系
+    // 1.首先指定谁是发布者。2.给发布者添加一个缓冲列表，用于存放回调函数以便通知订阅者。3.发布消息的时候，发布者会遍历这个缓存列表，依次触发
+    // 里边存放的订阅者的回调函数。
+    // 另外，我们还可以往回调函数里边加一些参数，订阅者可以接收这些参数。
+    
+    // 例子1：
+    var salesOffices = {};//定义售楼处
+    salesOffices.clientList = [];//定义缓存列表,用来存放订阅者
+    salesOffices.listen = function(fn) { //添加订阅者
+        this.clientList.push(fn);  //订阅的消息添加进缓存列表
+    }
+    salesOffices.trigger = function() {//发布消息
+        for(var i = 0,fn; fn = this.clientList[i++];) {
+            fn.apply(this,arguments); //arguments是发布消息时带上的参数
+        }
+    }
+
+    // 小明订阅了楼房的价格和平米
+    salesOffices.listen(function(price,square) {
+        console.log("楼房的价格是"+price);
+        console.log("楼房的平米数是"+square);
+    })
+    // 此时此刻我发布的是价格是8000，平米数是120
+    salesOffices.trigger(8000,120);
+
+    // 上边是一个最基本的订阅模式，有个缺点就是每次发布的都会告诉订阅者，但是有一些是订阅者不需要的，这里我们就加上一些条件，满足订阅者条件的推给订阅者
+
+
+    // 例子2：
+    var salesOffices = {};
+    salesOffices.clientList = {};//这次我们把订阅的列表换成一个对象
+    salesOffices.listen = function(key,fn) {
+        if(!this.clientList[key]) { //如果还是没有订阅过此类的消息，给该类创建一个数组用来存放
+            this.clientList[ key ] = [];
+        }
+        this.clientList[ key ].push(fn);
+    }
+
+    salesOffices.trigger = function() {
+        var key = Array.prototype.shift.call(arguments),
+            fns = this.clientList[ key ];
+
+        if(!fns || fns.length === 0) {
+            return false;
+        }    
+
+        for(var i = 0,fn; fn = fns[i++];) {
+            fn.apply( this, arguments );
+        }
+    }
+
+    salesOffices.listen('squareMeter88',function(price) {
+        console.log('价格是'+price);
+    })
+
+    salesOffices.listen('all',function(meter) {
+        console.log('一共是'+meter+'平米');
+    })
+
+    salesOffices.trigger('squareMeter88',20000);
+    salesOffices.trigger('all',120);
+
+    // 那么问题来了，如果我们换个售楼处，那么这里的代码是不是需要重新写一遍呢。
+    // 答案当然是不用。
+    var event = {
+        clientList: [],
+        listen: function(key,fn) {
+            if(!this.clientList[key]) {
+                this.clientList[key] = [];
+            }
+            this.clientList[key].push(fn);
+        },
+        trigger: function() {
+            var key = Array.prototype.shift.call(arguments);
+                fns = this.clientList[key];
+                if(!fns || fns.length == 0) {
+                    return false;
+                }
+                for(var i = 0,fn; fn = fns[i++];) {
+                    fn.apply(this,arguments);
+                }
+        }
+    }
+
+    // 我们再定义一个函数installEvent,这个函数目的就是给所有对象都动态的添加安装发布-订阅功能
+    var installEvent = function(obj) {
+        for(var i in event) {
+            obj[i] = event[i];
+        }
+    }
+
+    var salesOffices = {};
+    installEvent(salesOffices);
+    
+    salesOffices.listen('squareMeter88',function(price) {
+        console.log('价格是'+price);
+    })
+
+    salesOffices.listen('all',function(meter) {
+        console.log('一共是'+meter+'平米');
+    })
+
+    salesOffices.trigger('squareMeter88',36000);
+    salesOffices.trigger('all',150);
+
+    // 取消订阅的事件
+    event.remove = function(key,fn) {
+        var fns = this.clientList[key];
+        if(!fns) {
+            return false;
+        }
+        if(!fn) { //如果没有传入具体的回调函数，表示需要取消key对应消息的所有订阅
+            fns && (fns.length == 0);
+        } else {
+            for(var l = fns.length - 1; l >= 0; l--) { //反向遍历订阅的回调函数列表
+                var _fn = fns[l];
+                if(_fn = fns[l]) {
+                    fns.splice(l,1); //删除订阅者的回调函数
+                }
+            }
+        }
+    }
+
+    
 </script>
 </html>
