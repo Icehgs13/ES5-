@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>迭代器模式</title>
+</head>
+<body>
+    
+</body>
+<script>
+    // 迭代器模式：提供一种方法顺序访问一个聚合对象中的各个元素，而又不需要暴露该对象的内部表示。
+    // jquery中的迭代器模式是$.each,javaScript中的迭代是Array.prototype.forEach
+
+    // 我们开始实现自己的迭代器
+    var each = function(ary,callback) {
+        for(var i = 0, l = ary.length; i < l; i++) {
+            callback.call(ary[i],i,ary[i]);//把下标和元素当做参数传给callback函数
+        }
+    }
+
+    each([1,2,3,4],function(i,n){
+        alert([i,n]);
+    })
+
+    // 内部迭代和外部迭代
+    // 内部迭代：
+    var compare = function(ary1,ary2) {
+        if(ary1.length !== ary2.length) {
+            throw new Error('不相等');
+        }
+        each(ary1,function(i,n) {
+            if(n!== ary2[i]) {
+                throw new Error('不相等');
+            }
+        })
+        console.log('相等');
+    }
+    // 外部迭代：
+    
+
+
+    
+</script>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>函数节流</title>
+</head>
+<body>
+    
+</body>
+<script>
+    // 有些情况是非用户触发的，可能会出现性能问题
+    var throttle = function(fn, interval) {
+        var __self = fn,
+            timer,
+            firstTimer = true;
+
+        return function() {
+            var args = arguments,
+                __me = this;
+
+            if(firstTimer) {//如果是第一次调用不需要延迟
+                __self.apply(__me,args);
+                return firstTimer = false;
+            }
+
+            if (timer) {//如果定时器还在说明前一次延迟还没有执行完毕
+                return false;
+            }
+
+            timer = setTimeout(function() {
+                clearTimeout(timer);
+                timer = null;
+                __self.apply(__me,args);
+            },interval || 500);
+        }    
+    }
+
+    window.onresize = throttle(function() {
+        console.log(1);
+    },500);
+</script>
+</html>

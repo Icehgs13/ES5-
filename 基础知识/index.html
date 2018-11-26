@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="div1">
+        点击测试
+    </div>    
+</body>
+<script>
+var div1 = document.getElementById("div1");
+div1.onclick = function() {
+    console.log(this.id);
+    function getId(){
+        console.log(this.id);
+    }
+    // 测试通过call来改变this的指向
+    getId();//结果是undefined
+    getId.call(div1);//结果是div1
+}
+
+
+//通过apply来修改默认的document.getELementById内部的this指向从而使得这个函数可用
+document.getElementById = (function(func) {
+    return function() {
+        return func.apply(document,arguments);
+    }
+})(document.getElementById);
+
+var gId = document.getElementById;
+var div = gId('div1');
+console.log(div);
+
+</script>
+</html>
