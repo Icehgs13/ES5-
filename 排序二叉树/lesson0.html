@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>排序二叉树第一讲</title>
+</head>
+<body>
+    
+</body>
+<script>
+    // 定义一个排序二叉树
+    function BinaryTree() {
+        var Node = function(key) {
+            this.key = key;
+            this.left = null; //左节点
+            this.right = null;//右节点
+        }
+        // 定义一个根节点
+        var root = null;
+        // 插入节点
+        var insertNode = function(node, newNode) {
+            if(newNode.key < node.key) {
+                if(node.left === null) {
+                    node.left = newNode;
+                } else {
+                    insertNode(node.left,newNode);
+                }
+            } else {
+                if(node.right === null) {
+                    node.right = newNode;
+                } else {
+                    insertNode(node.right,newNode);
+                }
+            }
+        }
+        // 定义插入函数
+        this.insert = function(key) {
+            // var key = key;
+            var newNode = new Node(key);
+            if(root == null) {
+                root = newNode;
+            } else {
+                insertNode(root,newNode)
+            }
+        };
+    }
+
+    var nodes = [8,3,10,1,6,14,7,13];
+    var binaryTree = new BinaryTree();
+    nodes.forEach(function(key) {
+        binaryTree.insert(key);
+    })
+
+</script>
+</html>
